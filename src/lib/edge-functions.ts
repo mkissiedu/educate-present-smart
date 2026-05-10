@@ -1,22 +1,15 @@
 /**
- * Edge Function Caller — V3
- * 
- * Calls edge functions via direct fetch() to the Supabase project where
- * they are deployed (ytrclmdbfbvxtfxusspt.databasepad.com).
- * 
- * Architecture:
- *   - Database (PostgREST) → bdiqvamaufgdvkjozenl.databasepad.com (via supabase client)
- *   - Edge Functions        → ytrclmdbfbvxtfxusspt.databasepad.com (via direct fetch)
- * 
- * The frontend supabase client at bdiqvamaufgdvkjozenl.databasepad.com handles
- * database queries. Edge functions are deployed on a separate project
- * (ytrclmdbfbvxtfxusspt) and must be called directly to avoid the proxy 404.
- * 
+ * Edge Function Caller — V4
+ *
+ * Calls Supabase edge functions via direct fetch() using the same project
+ * URL and anon key as the database client (VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY).
+ *
  * Expected version markers:
  *   send-otp: V15
  *   verify-otp: V5
  *   reset-password: V2
  *   create-user: V7
+ *   create-school: V1
  *   validate-session: V1
  *   logout-session: V1
  */
@@ -24,11 +17,11 @@
 import { User, UserRole, ClassLevel } from '@/types/user';
 
 // ─── Edge Function Endpoint Config ─────────────────────────────────
-// Edge functions are deployed on the ytrclmdbfbvxtfxusspt project,
-// NOT on the bdiqvamaufgdvkjozenl project where the database lives.
+// Edge functions are co-located with the database on the same Supabase project.
+// Both are derived from the same VITE_SUPABASE_* env vars so they stay in sync.
 
-const EDGE_FUNCTION_BASE_URL = 'https://ytrclmdbfbvxtfxusspt.databasepad.com/functions/v1';
-const EDGE_FUNCTION_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjIxNWRhNWFjLWE0ZjItNGJiNS05NTM0LTRkOTBkYjVjOTc2NyJ9.eyJwcm9qZWN0SWQiOiJ5dHJjbG1kYmZidnh0Znh1c3NwdCIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzcxMzA4ODQ4LCJleHAiOjIwODY2Njg4NDgsImlzcyI6ImZhbW91cy5kYXRhYmFzZXBhZCIsImF1ZCI6ImZhbW91cy5jbGllbnRzIn0.5PYrcxgtrq8abhi3wdXBuUwvOzleCNFhb3RjcatpDY0';
+const EDGE_FUNCTION_BASE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1`;
+const EDGE_FUNCTION_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
 // ─── Response Types ────────────────────────────────────────────────
 

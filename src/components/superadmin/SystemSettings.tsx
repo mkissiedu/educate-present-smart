@@ -245,7 +245,7 @@ export const SystemSettings: React.FC = () => {
                     onClick={handleTestEmail}
                     disabled={testingEmail}
                     variant="outline"
-                    className="border-white/20 text-white"
+                    className="border-white/20 text-white bg-purple-600 hover:bg-purple-700"
                   >
                     {testingEmail ? (
                       <Loader2 className="w-4 h-4 animate-spin mr-2" />

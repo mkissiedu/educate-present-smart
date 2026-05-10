@@ -1,6 +1,18 @@
 import { supabase } from './supabase';
 import { Question, QuestionOption, TestPaper, TestPaperQuestion, QuestionFilter } from '@/types/question-bank';
 
+export async function createQuestionsBatch(
+  questions: Omit<Question, 'id' | 'created_at'>[],
+  optionSets: Omit<QuestionOption, 'id' | 'question_id'>[][]
+): Promise<number> {
+  let saved = 0;
+  for (let i = 0; i < questions.length; i++) {
+    const result = await createQuestion(questions[i], optionSets[i] || []);
+    if (result) saved++;
+  }
+  return saved;
+}
+
 export async function createQuestion(question: Omit<Question, 'id' | 'created_at'>, options?: Omit<QuestionOption, 'id' | 'question_id'>[]): Promise<Question | null> {
   const { data, error } = await supabase.from('questions').insert(question).select().single();
   if (error || !data) return null;

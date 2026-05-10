@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, FileText, Database, AlertCircle } from 'lucide-react';
+import { Plus, FileText, Database, AlertCircle, Sparkles } from 'lucide-react';
 import { Question, QuestionFilter } from '@/types/question-bank';
-import { getQuestions, createQuestion, deleteQuestion } from '@/lib/supabase-questions';
+import { getQuestions, createQuestion, createQuestionsBatch, deleteQuestion } from '@/lib/supabase-questions';
 import { QuestionBankFilters } from './QuestionBankFilters';
 import { QuestionCard } from './QuestionCard';
 import { QuestionForm } from './QuestionForm';
 import { CurriculumIndicatorSelector } from './CurriculumIndicatorSelector';
+import { AIQuestionGenerator } from './AIQuestionGenerator';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface Props {
@@ -20,6 +21,7 @@ export function QuestionBankMain({ onCreateTestPaper, assignedSubjects, assigned
   const [questions, setQuestions] = useState<Question[]>([]);
   const [filter, setFilter] = useState<QuestionFilter>({});
   const [showAddForm, setShowAddForm] = useState(false);
+  const [addMode, setAddMode] = useState<'manual' | 'ai'>('manual');
   const [curriculumData, setCurriculumData] = useState<any>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -46,6 +48,24 @@ export function QuestionBankMain({ onCreateTestPaper, assignedSubjects, assigned
     setShowAddForm(false);
     setCurriculumData(null);
     loadQuestions();
+  };
+
+  const handleAISave = async (questions: any[], optionSets: any[][]) => {
+    await createQuestionsBatch(questions, optionSets);
+    setShowAddForm(false);
+    setCurriculumData(null);
+    loadQuestions();
+  };
+
+  const openAdd = (mode: 'manual' | 'ai') => {
+    setAddMode(mode);
+    setShowAddForm(true);
+    setCurriculumData(null);
+  };
+
+  const cancelAdd = () => {
+    setShowAddForm(false);
+    setCurriculumData(null);
   };
 
   const handleDelete = async (id: string) => {
@@ -81,12 +101,28 @@ export function QuestionBankMain({ onCreateTestPaper, assignedSubjects, assigned
         </div>
         <div className="flex gap-2">
           {selectedIds.length > 0 && <Button onClick={() => onCreateTestPaper?.(selectedQuestions)}><FileText className="w-4 h-4 mr-2" />Create Test ({selectedIds.length})</Button>}
-          {canManage && hasAssignments && <Button onClick={() => setShowAddForm(true)}><Plus className="w-4 h-4 mr-2" />Add Question</Button>}
+          {canManage && hasAssignments && (
+            <>
+              <Button variant="outline" onClick={() => openAdd('ai')} className="border-blue-300 text-blue-700 hover:bg-blue-50">
+                <Sparkles className="w-4 h-4 mr-2" />Generate with AI
+              </Button>
+              <Button onClick={() => openAdd('manual')}>
+                <Plus className="w-4 h-4 mr-2" />Add Question
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
-      {showAddForm && !curriculumData && <CurriculumIndicatorSelector onSelect={setCurriculumData} assignedSubjects={assignedSubjects} assignedClasses={assignedClasses} />}
-      {showAddForm && curriculumData && <QuestionForm curriculumData={curriculumData} onSubmit={handleAddQuestion} onCancel={() => { setShowAddForm(false); setCurriculumData(null); }} />}
+      {showAddForm && !curriculumData && (
+        <CurriculumIndicatorSelector onSelect={setCurriculumData} assignedSubjects={assignedSubjects} assignedClasses={assignedClasses} />
+      )}
+      {showAddForm && curriculumData && addMode === 'manual' && (
+        <QuestionForm curriculumData={curriculumData} onSubmit={handleAddQuestion} onCancel={cancelAdd} />
+      )}
+      {showAddForm && curriculumData && addMode === 'ai' && (
+        <AIQuestionGenerator curriculumData={curriculumData} onSave={handleAISave} onCancel={cancelAdd} />
+      )}
 
       <QuestionBankFilters filter={filter} onFilterChange={setFilter} assignedSubjects={assignedSubjects} assignedClasses={assignedClasses} />
 
