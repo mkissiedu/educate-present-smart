@@ -248,6 +248,7 @@ export const KnowledgeBaseManager: React.FC = () => {
               <div>
                 <Label>Subject (optional)</Label>
                 <select
+                  title="Subject"
                   value={form.subject}
                   onChange={e => setForm(f => ({ ...f, subject: e.target.value }))}
                   className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
@@ -259,6 +260,7 @@ export const KnowledgeBaseManager: React.FC = () => {
               <div>
                 <Label>Grade Level (optional)</Label>
                 <select
+                  title="Grade Level"
                   value={form.grade_level}
                   onChange={e => setForm(f => ({ ...f, grade_level: e.target.value }))}
                   className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
@@ -295,7 +297,7 @@ export const KnowledgeBaseManager: React.FC = () => {
                 {form.file_name && (
                   <p className="text-purple-600 text-sm font-medium mt-2">{form.file_name} — {form.content.length.toLocaleString()} characters loaded</p>
                 )}
-                <input ref={fileInputRef} type="file" accept=".txt,.md,text/plain" className="hidden" onChange={handleFileUpload} />
+                <input ref={fileInputRef} type="file" accept=".txt,.md,text/plain" className="hidden" aria-label="Upload knowledge base file" onChange={handleFileUpload} />
               </div>
             ) : (
               <div>
