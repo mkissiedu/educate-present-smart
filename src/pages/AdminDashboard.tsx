@@ -53,10 +53,13 @@ const AdminDashboard: React.FC = () => {
   useEffect(() => {
     if (user && !isAdmin) navigate('/');
     else if (!user && !isAuthenticated) navigate('/');
-    else if (isAdmin && schoolId) { selectSchoolById(schoolId); loadStats(); }
-  }, [user, isAuthenticated, isAdmin, schoolId]);
+    else if (isAdmin && schoolId) {
+      if (!currentSchool || currentSchool.id !== schoolId) selectSchoolById(schoolId);
+      loadStats();
+    }
+  }, [user?.id, isAuthenticated, isAdmin, schoolId]);
 
-  useEffect(() => { if (isAdmin && currentSchool) loadStats(); }, [currentSchool]);
+  useEffect(() => { if (isAdmin && currentSchool) loadStats(); }, [currentSchool?.id]);
 
   const loadStats = async () => {
     const sid = currentSchool?.id || schoolId;
