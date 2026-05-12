@@ -24,7 +24,7 @@ import { OMRSheetConfig, OMRScanResult } from '@/types/omr-scanner';
 export default function QuestionBank() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user, isSuperTeacher, isPlatformAdmin } = useAuth();
+  const { user, isSuperTeacher, isPlatformAdmin, isSuperAdmin } = useAuth();
   const { currentSchool } = useSchool();
   const { currentTerm } = useTerm();
   const [activeTab, setActiveTab] = useState<'questions' | 'papers'>('questions');
@@ -195,7 +195,7 @@ export default function QuestionBank() {
 
 
   // Show message if no assignments
-  if (!loadingAssignment && !isSuperTeacher && !isPlatformAdmin && assignedSubjects.length === 0) {
+  if (!loadingAssignment && !isSuperTeacher && !isPlatformAdmin && !isSuperAdmin && assignedSubjects.length === 0) {
     return (
       <div className={`min-h-screen bg-gradient-to-br ${theme.gradient}`}>
         <header className={`bg-gradient-to-r ${theme.headerGradient} shadow-lg`}>
@@ -364,8 +364,8 @@ export default function QuestionBank() {
           <div className="bg-white rounded-xl shadow-xl">
             <QuestionBankMain 
               onCreateTestPaper={handleCreateTestPaper} 
-              assignedSubjects={isSuperTeacher || isPlatformAdmin ? undefined : assignedSubjects}
-              assignedClasses={isSuperTeacher || isPlatformAdmin ? undefined : assignedClasses}
+              assignedSubjects={isSuperTeacher || isPlatformAdmin || isSuperAdmin ? undefined : assignedSubjects}
+              assignedClasses={isSuperTeacher || isPlatformAdmin || isSuperAdmin ? undefined : assignedClasses}
             />
           </div>
         )}
