@@ -46,10 +46,19 @@ const Dashboard: React.FC = () => {
 
   const { getPlanningSessionForLesson, refreshSingleLesson, loading: loadingPlanning } = usePlanningStatus(user?.id);
 
-  // Create gradient style from branding
-  const dashboardGradientStyle = branding.header_gradient_from !== '#1E3A8A' || branding.logo_url
-    ? { background: `linear-gradient(to bottom right, ${branding.header_gradient_from}ee, ${branding.primary_color}cc, ${branding.header_gradient_to}dd)` }
-    : undefined;
+  const hasBrandingGradient = branding.header_gradient_from !== '#1E3A8A' || !!branding.logo_url;
+
+  useEffect(() => {
+    if (!hasBrandingGradient) return;
+    const styleEl = document.createElement('style');
+    styleEl.id = 'dashboard-branding-gradient';
+    styleEl.textContent = [
+      `.dashboard-branded-bg { background: linear-gradient(to bottom right, ${branding.header_gradient_from}ee, ${branding.primary_color}cc, ${branding.header_gradient_to}dd); }`,
+      `.dashboard-primary-btn { background-color: ${branding.primary_color}; }`,
+    ].join(' ');
+    document.head.appendChild(styleEl);
+    return () => { styleEl.remove(); };
+  }, [hasBrandingGradient, branding.header_gradient_from, branding.primary_color, branding.header_gradient_to]);
 
   useEffect(() => {
     if (user?.id && user?.school_id) loadAssignment();
@@ -151,10 +160,10 @@ const Dashboard: React.FC = () => {
     
     // For multi-both mode, check against the mapping
     if (assignmentMode === 'multi-both' && classSubjectMapping) {
-      const isValidPair = classSubjectMapping[lesson.class]?.includes(lesson.subject);
+      const isValidPair = lesson.class && classSubjectMapping[lesson.class]?.includes(lesson.subject);
       if (!isValidPair) return false;
     } else {
-      const matchesAssignedClass = assignedClasses.includes(lesson.class);
+      const matchesAssignedClass = lesson.class ? assignedClasses.includes(lesson.class) : false;
       const matchesAssignedSubject = assignedSubjects.includes(lesson.subject);
       if (!matchesAssignedClass || !matchesAssignedSubject) return false;
     }
@@ -214,9 +223,8 @@ const Dashboard: React.FC = () => {
 
   if (loadingAssignment) {
     return (
-      <div 
-        className={`min-h-screen flex items-center justify-center ${!dashboardGradientStyle ? 'bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900' : ''}`}
-        style={dashboardGradientStyle}
+      <div
+        className={`min-h-screen flex items-center justify-center ${hasBrandingGradient ? 'dashboard-branded-bg' : 'bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900'}`}
       >
         <Loader2 className="w-8 h-8 animate-spin text-white" />
       </div>
@@ -226,9 +234,8 @@ const Dashboard: React.FC = () => {
   if (!assignment || assignedClasses.length === 0 || assignedSubjects.length === 0) {
     const logoToDisplay = branding.logo_url || CATALYST_LOGO;
     return (
-      <div 
-        className={`min-h-screen flex items-center justify-center p-4 ${!dashboardGradientStyle ? 'bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900' : ''}`}
-        style={dashboardGradientStyle}
+      <div
+        className={`min-h-screen flex items-center justify-center p-4 ${hasBrandingGradient ? 'dashboard-branded-bg' : 'bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900'}`}
       >
         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 max-w-md w-full text-center">
           <img src={logoToDisplay} alt="Logo" className="h-16 mx-auto mb-4 object-contain bg-white/90 rounded-lg px-3 py-2" />
@@ -240,7 +247,7 @@ const Dashboard: React.FC = () => {
           ) : (
             <>
               <p className="text-white/70 mb-6">Please select your assigned classes and subjects to get started.</p>
-              <Button onClick={() => setShowAssignment(true)} style={{ backgroundColor: branding.primary_color }} className="hover:opacity-90 w-full text-white">
+              <Button onClick={() => setShowAssignment(true)} className="dashboard-primary-btn hover:opacity-90 w-full text-white">
                 <Settings className="w-4 h-4 mr-2" /> Set Up My Classes
               </Button>
             </>
@@ -252,8 +259,7 @@ const Dashboard: React.FC = () => {
   }
   return (
     <div 
-      className={`min-h-screen ${!dashboardGradientStyle ? 'bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900' : ''}`}
-      style={dashboardGradientStyle}
+      className={`min-h-screen ${hasBrandingGradient ? 'dashboard-branded-bg' : 'bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900'}`}
     >
       <DashboardHeader user={user} navigate={navigate} isAuthenticated={isAuthenticated} logout={logout} setShowAssignment={setShowAssignment} adminAssigned={adminAssigned} />
       <DashboardContent
