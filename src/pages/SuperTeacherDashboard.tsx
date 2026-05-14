@@ -192,8 +192,41 @@ const SuperTeacherDashboard: React.FC = () => {
 
         {activeTab === 'analytics' && <SuperTeacherAnalytics />}
         {activeTab === 'questions' && <div className="bg-white rounded-xl shadow-xl"><QuestionBankMain assignedSubjects={assignedSubjects} assignedClasses={assignedClasses} /></div>}
-        {activeTab === 'reviews' && <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">{reviews.map(r => { const l = lessons.find(x => x.id === r.lesson_id); return l ? <div key={r.id} className="bg-white/10 rounded-xl p-4 border border-white/20"><h3 className="font-bold text-white">{l.title}</h3><ReviewStatusBadge status={r.status} size="sm" /></div> : null; })}</div>}
-        {activeTab === 'published' && <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">{publishedContent.filter(c => assignedSubjects.includes(c.subject)).map(c => <div key={c.id} className="bg-white/10 rounded-xl p-4 border border-white/20"><h3 className="font-bold text-white">{c.title}</h3><p className="text-amber-200 text-sm">{c.subject}</p></div>)}</div>}
+        {activeTab === 'reviews' && (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {reviews.length === 0 ? (
+              <div className="col-span-full bg-white/10 rounded-xl p-10 text-center">
+                <FileCheck className="w-12 h-12 text-white/30 mx-auto mb-3" />
+                <p className="text-white/60 font-medium">No lessons pending review</p>
+                <p className="text-white/40 text-sm mt-1">Lessons you submit for review will appear here.</p>
+              </div>
+            ) : reviews.map(r => {
+              const l = lessons.find(x => x.id === r.lesson_id);
+              return l ? (
+                <div key={r.id} className="bg-white/10 rounded-xl p-4 border border-white/20">
+                  <h3 className="font-bold text-white">{l.title}</h3>
+                  <ReviewStatusBadge status={r.status} size="sm" />
+                </div>
+              ) : null;
+            })}
+          </div>
+        )}
+        {activeTab === 'published' && (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {publishedContent.filter(c => assignedSubjects.includes(c.subject)).length === 0 ? (
+              <div className="col-span-full bg-white/10 rounded-xl p-10 text-center">
+                <Globe className="w-12 h-12 text-white/30 mx-auto mb-3" />
+                <p className="text-white/60 font-medium">No published content yet</p>
+                <p className="text-white/40 text-sm mt-1">Lessons you publish will appear here once approved.</p>
+              </div>
+            ) : publishedContent.filter(c => assignedSubjects.includes(c.subject)).map(c => (
+              <div key={c.id} className="bg-white/10 rounded-xl p-4 border border-white/20">
+                <h3 className="font-bold text-white">{c.title}</h3>
+                <p className="text-amber-200 text-sm">{c.subject}</p>
+              </div>
+            ))}
+          </div>
+        )}
         {activeTab === 'assignments' && (assignments.length === 0 ? <NoAssignmentsMessage /> : <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">{assignedSubjects.map(s => <div key={s} className="bg-white/10 rounded-xl p-4 border border-white/20"><h3 className="font-bold text-white">{s}</h3><div className="flex flex-wrap gap-1 mt-2">{assignments.filter(a => a.subject === s).map(a => <span key={a.id} className="text-xs bg-amber-500/30 text-amber-200 px-2 py-1 rounded">{a.class_level}</span>)}</div></div>)}</div>)}
         {activeTab === 'resources' && <div className="bg-white/10 backdrop-blur-md rounded-xl"><SuperTeacherAssessmentHub onNavigateToCurriculum={() => navigate('/curriculum')} assignedClasses={assignedClasses} assignedSubjects={assignedSubjects} /></div>}
       </div>

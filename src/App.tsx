@@ -16,7 +16,6 @@ import SuperTeacherDashboard from "./pages/SuperTeacherDashboard";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import NotFound from "./pages/NotFound";
 import LessonEditor from "./pages/LessonEditor";
-import ResourceLibrary from "./components/ResourceLibrary";
 import CurriculumMap from "./components/CurriculumMap";
 import TermPlanner from "./pages/TermPlanner";
 import QuestionBank from "./pages/QuestionBank";
@@ -43,7 +42,6 @@ const App = () => (
                       <Route path="/admin" element={<AdminDashboard />} />
                       <Route path="/super-teacher" element={<SuperTeacherDashboard />} />
                       <Route path="/super-admin" element={<SuperAdminDashboard />} />
-                      <Route path="/templates" element={<ResourceLibrary />} />
                       <Route path="/curriculum" element={<CurriculumMap />} />
                       <Route path="/term-planner" element={<TermPlanner />} />
                       <Route path="/question-bank" element={<QuestionBank />} />

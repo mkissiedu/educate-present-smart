@@ -134,6 +134,16 @@ const TermPlanner: React.FC = () => {
               Weekly Schedule - {selectedTerm.name} ({classLevel})
             </h3>
             <TermWeekGrid weekStatuses={progress.weekStatuses} lessons={filteredLessons} subject={subjectFilter} classLevel={classLevel} onSelectLesson={setSelectedLesson} />
+            {filteredLessons.length === 0 && (
+              <div className="bg-white/10 backdrop-blur-md rounded-xl p-8 text-center mt-4">
+                <BookOpen className="w-12 h-12 text-white/30 mx-auto mb-3" />
+                <p className="text-white/70 font-medium">No lessons planned for {classLevel} yet</p>
+                <p className="text-white/40 text-sm mt-1 mb-4">Create your first lesson to start populating this term's schedule.</p>
+                <Button onClick={() => navigate('/editor/new')} className="bg-blue-600 hover:bg-blue-700">
+                  Create a Lesson
+                </Button>
+              </div>
+            )}
           </div>
         )}
 
@@ -154,8 +164,15 @@ const TermPlanner: React.FC = () => {
         )}
 
         {!selectedTerm && viewMode !== 'attendance' && (
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-8 text-center">
-            <p className="text-slate-300">No term selected. Please configure term dates in settings.</p>
+          <div className="bg-white/10 backdrop-blur-md rounded-xl p-10 text-center">
+            <CalendarDays className="w-14 h-14 text-white/30 mx-auto mb-4" />
+            <p className="text-white font-semibold text-lg mb-1">No term configured</p>
+            <p className="text-white/50 text-sm mb-5">
+              Academic term dates have not been set up yet. Contact your school admin to configure them.
+            </p>
+            <Button onClick={() => navigate('/dashboard')} variant="ghost" className="text-white hover:bg-white/10">
+              <Home className="w-4 h-4 mr-2" /> Back to Dashboard
+            </Button>
           </div>
         )}
       </div>

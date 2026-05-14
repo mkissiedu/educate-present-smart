@@ -110,7 +110,7 @@ const AdminDashboard: React.FC = () => {
     <div className={`min-h-screen bg-gradient-to-br ${theme.gradient}`}>
       <PortalHeader portalType="admin" title="School Admin Portal" subtitle={currentSchool?.name} schoolName={currentSchool?.code} />
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <PortalTabs tabs={tabs} activeTab={activeTab} onTabChange={(id) => id === 'messages' ? setShowMessage(true) : setActiveTab(id)} portalType="admin" />
+        <PortalTabs tabs={tabs} activeTab={activeTab} onTabChange={(id) => { setActiveTab(id); if (id === 'messages') setShowMessage(true); }} portalType="admin" />
         {activeTab === 'overview' && (
           <div className="space-y-6">
             {pendingPayments > 0 && (
@@ -200,6 +200,20 @@ const AdminDashboard: React.FC = () => {
         {activeTab === 'assess' && <div className="bg-white/10 backdrop-blur-md rounded-xl"><AssessmentHub onNavigateToCurriculum={() => navigate('/curriculum')} /></div>}
         {activeTab === 'reports' && <div className="bg-white/10 backdrop-blur-md rounded-xl"><ReportCardReview /></div>}
         {activeTab === 'branding' && <div className="bg-white/10 backdrop-blur-md rounded-xl"><SchoolBrandingSettings /></div>}
+        {activeTab === 'messages' && (
+          <div className="bg-white/10 backdrop-blur-md rounded-xl p-10 text-center">
+            <MessageCircle className="w-16 h-16 text-green-400 mx-auto mb-4 opacity-80" />
+            <h2 className="text-xl font-bold text-white mb-2">Message Parents</h2>
+            <p className="text-white/60 mb-6">Send a bulk WhatsApp or SMS message to parents of students in your school.</p>
+            <button
+              type="button"
+              onClick={() => setShowMessage(true)}
+              className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors"
+            >
+              Compose Message
+            </button>
+          </div>
+        )}
       </div>
       <BulkParentMessage isOpen={showMessage} onClose={() => setShowMessage(false)} students={students} />
     </div>
